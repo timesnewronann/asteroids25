@@ -1,5 +1,6 @@
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from logger import log_state
+from player import Player
 import pygame
 
 
@@ -14,6 +15,15 @@ def main():
     # create a new clock object
     clock = pygame.time.Clock()
 
+    # Create groups
+    updatable = pygame.sprite.Group()
+    drawable = pygame.sprint.Group()
+
+    # before player object instance is created
+    Player.containers = (updatable, drawable)
+
+    player = Player(x=SCREEN_WIDTH / 2, y=SCREEN_HEIGHT/2)
+
     # delta time variable set to 0
     dt = 0
 
@@ -26,6 +36,8 @@ def main():
                 return
 
         screen.fill("black")
+        player.draw(screen)
+        player.update(dt)
         pygame.display.flip()
 
         # call the clock.tick method
