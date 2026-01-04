@@ -3,7 +3,10 @@ from logger import log_state
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
+from logger import log_event
+from shot import Shot
 import pygame
+import sys
 
 
 def main():
@@ -21,6 +24,7 @@ def main():
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
 
     # before player object instance is created
     Player.containers = (updatable, drawable)
@@ -31,6 +35,8 @@ def main():
     AsteroidField.containers = updatable
 
     asteroidField = AsteroidField()
+
+    Shot.containers = (shots, drawable, updatable)
 
     # delta time variable set to 0
     dt = 0
@@ -48,6 +54,19 @@ def main():
         # update the group not the player
         updatable.update(dt)
 
+        # iterate over all the objects in Asteroid group
+        for obj in asteroids:
+            # check if any collide with the player
+            if player.collides_with(obj):
+                log_event("player_hit")
+                print("Game over!")
+                sys.exit()
+
+            for shot in shots:
+                if obj.collides_with(shot):
+                    log_event("asteroid_shot")
+                    shot.kill()
+                    obj.split()
         for obj in drawable:
             obj.draw(screen)
         # Replace with groups
